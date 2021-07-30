@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PhoneBookMVC.Services.Interfaces;
+using PhoneBookMVC.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -61,11 +62,9 @@ namespace PhoneBookMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (contact.ImageFile != null)
-                {
-                    contact.ImageData = await _imageService.ConvertFileToByteArrayAsync(contact.ImageFile);
-                    contact.ImageType = contact.ImageFile.ContentType;
-                }
+                var contactHelper = new ContactHelper();
+                Contact newContact = await contactHelper.GetImage(contact, _imageService);
+                contact = newContact;
                 _context.Add(contact);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
